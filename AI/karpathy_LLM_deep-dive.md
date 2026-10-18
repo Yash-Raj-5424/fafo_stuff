@@ -41,7 +41,7 @@
 
 > **CRUX of a Base Model** => Base Model is kinda internet document simulator => it is stochastic/probabilistic => it can recite some training data verbatim(regurgitation)
 
-# Post Training
+# SFT Training (supervised learning)
 - we train based on examples of conversation b/w user and assistant
 
 - **human labeller** - a person who manually reviews and tags data so that it can be used to train or evaluate the models.
@@ -58,3 +58,38 @@
 - we can program a "sense of self" in 2 ways:
 - 1. hardcoded convos around these topics
 - 2. "system msg" that reminds the model at the begining of every convo about its identity
+
+**models need tokens to think**
+- the computation must be spread across the tokens so that the whole compute isn't relied on a single or a small portion of tokens
+- doing all the mental arithematic in-memory is not good for models as they try to do it in a single forward pass, so they can't do the intermediate calculations and often turn up giving wrong answers.
+- we spreading the compute across the tokens is better. we could also ask the model to use tools (say code => turn this problem into a code and then solve it) and turns up models are good at these tasks, so we get right answer
+
+**no of `r`s in `strawberry`**
+- models don't see characters. what they see are tokens so maybe the case it used to tell there are 2 `r`s in `strawberry`. similarly the models are not very good at spelling related tasks for ex: u ask it to give every 3rd character in a string and it might end up giving wrong answer as it doesn't see characters rather tokens instead.
+
+# Reinforcement Learning
+- we get an SFT (supervised Fine-Tuning) model as a result of supervised training
+- now we perform post training (RL)
+- here the model learns itself from many solutions it has generated and keeps correcting itself
+
+**Deepseek-R1 - the RL paper**
+- models use chains of thought and it increases the response length and also the accuracy of the problem solving
+- model tries to find ways to solve a problem. it uses cognitive strategies to tackle a problem
+--
+
+## RLHF (RL from human feedback)
+- models give different responses for unverfiable problems and these problems don't have one specific or correct answer. their answers can be opinionated
+- RLHF is used in unverifiable these domains
+- what we do is ask humans to evaluate those responses and we try to build a separate model (**reward model**) that would imitate the human's evaluation of those evaluation (for unverifiable problems)
+- for example: tell me a joke about CPU, write a poem on RAM etc.
+- the reward model takes an input prompt and a candidate response and output a number (score)
+- the scores of the reward model might not be correct as per the actual human feedback so we try to tune the scores in different passes.
+
+**upsides of RLHF**
+- running RLHF in unverifiable domains empirically improves the model perf. possibly due to the `discriminator-generator` gap. in many cases it is easy to discriminate than to generate. eg: write a poem vs which of these 5 poems is the best
+
+**donwnsides of RLHF**
+- we're doing RL with respect to a lossy simulation of humans. it might be misleading.
+- the model interprets the scoring as a game and tries to improve scores and might end up giving non-sense responses (adverserial inputs).
+
+> **CRUX of all three stages** - exposition(background knowledge) is pretraining, problem+demonstrated soln is supervised finetuning, practice problems is reinforcement leraning
